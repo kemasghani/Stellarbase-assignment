@@ -426,3 +426,23 @@ body {
     background-color: var(--muted-foreground);
     cursor: not-allowed;
 }
+
+/* Trust Signals */
+.trust-signals {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+}
+
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+}
+
+.trust-item svg {
+    color: var(--accent);
+}
