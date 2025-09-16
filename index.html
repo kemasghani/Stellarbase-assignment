@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Wireless Headphones - AudioTech Store</title>
+    <meta name="description"
+        content="Premium wireless headphones with noise cancellation, 30-hour battery life, and superior sound quality. Available in multiple colors and sizes.">
+    <meta name="keywords" content="wireless headphones, noise cancellation, premium audio, bluetooth headphones">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>AudioTech</h1>
+                </div>
+                <nav class="nav">
+                    <a href="#" class="nav-link">Products</a>
+                    <a href="#" class="nav-link">About</a>
+                    <a href="#" class="nav-link">Support</a>
+                </nav>
+                <div class="header-actions">
+                    <button class="search-btn" aria-label="Search">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <button class="cart-btn" aria-label="Shopping cart" onclick="toggleCart()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z">
+                            </path>
+                            <path
+                                d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z">
+                            </path>
+                            <path
+                                d="M1 1H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19.4C19.8693 16.009 20.3268 15.8526 20.6925 15.5583C21.0581 15.264 21.3086 14.8504 21.4 14.39L23 6H6">
+                            </path>
+                        </svg>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="product-page">
+                <!-- Product Images -->
+                <div class="product-images">
+                    <div class="main-image">
+                        <img id="mainImage" src="/placeholder.svg?height=500&width=500"
+                            alt="Premium Wireless Headphones" loading="eager">
+                        <div class="sale-badge" id="saleBadge" style="display: none;">SALE</div>
+                        <div class="stock-badge" id="stockBadge" style="display: none;">OUT OF STOCK</div>
+                    </div>
+                    <div class="thumbnail-images">
+                        <img class="thumbnail active" src="/placeholder.svg?height=100&width=100" alt="Black headphones"
+                            onclick="changeMainImage(this, 0)">
+                        <img class="thumbnail" src="/placeholder.svg?height=100&width=100" alt="White headphones"
+                            onclick="changeMainImage(this, 1)">
+                        <img class="thumbnail" src="/placeholder.svg?height=100&width=100" alt="Blue headphones"
+                            onclick="changeMainImage(this, 2)">
+                    </div>
+                </div>
+
+                <!-- Product Details -->
+                <div class="product-details">
+                    <div class="product-header">
+                        <h1 class="product-title" id="productTitle">Premium Wireless Headphones</h1>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <span class="star filled">★</span>
+                                <span class="star filled">★</span>
+                                <span class="star filled">★</span>
+                                <span class="star filled">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <span class="rating-text">(4.2) 127 reviews</span>
+                        </div>
+                    </div>
+
+                    <div class="price-section">
+                        <div class="price-container">
+                            <span class="current-price" id="currentPrice">$299.99</span>
+                            <span class="original-price" id="originalPrice" style="display: none;">$399.99</span>
+                        </div>
+                        <div class="savings" id="savings" style="display: none;">Save $100.00</div>
+                    </div>
+
+                    <div class="product-description">
+                        <p>Experience premium sound quality with our flagship wireless headphones featuring advanced
+                            noise cancellation technology, 30-hour battery life, and superior comfort for all-day
+                            listening.</p>
+                        <ul class="features-list">
+                            <li>Active Noise Cancellation</li>
+                            <li>30-hour battery life</li>
+                            <li>Quick charge: 5 min = 3 hours playback</li>
+                            <li>Premium leather ear cushions</li>
+                            <li>Bluetooth 5.0 connectivity</li>
+                        </ul>
+                    </div>
+
+                    <!-- Variant Selector -->
+                    <div class="variant-section">
+                        <div class="variant-group">
+                            <label for="colorSelect" class="variant-label">Color:</label>
+                            <select id="colorSelect" class="variant-select" onchange="updateVariant()">
+                                <option value="black">Midnight Black</option>
+                                <option value="white">Pearl White</option>
+                                <option value="blue">Ocean Blue</option>
+                            </select>
+                        </div>
+                        <div class="variant-group">
+                            <label for="sizeSelect" class="variant-label">Size:</label>
+                            <select id="sizeSelect" class="variant-select" onchange="updateVariant()">
+                                <option value="standard">Standard</option>
+                                <option value="large">Large</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Quantity and Add to Cart -->
+                    <div class="purchase-section">
+                        <div class="quantity-section">
+                            <label for="quantity" class="quantity-label">Quantity:</label>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantity()"
+                                    aria-label="Decrease quantity">-</button>
+                                <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="10"
+                                    onchange="validateQuantity()">
+                                <button class="quantity-btn" onclick="increaseQuantity()"
+                                    aria-label="Increase quantity">+</button>
+                            </div>
+                            <span class="stock-info" id="stockInfo">10 in stock</span>
+                        </div>
+
+                        <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z">
+                                </path>
+                                <path
+                                    d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z">
+                                </path>
+                                <path
+                                    d="M1 1H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19.4C19.8693 16.009 20.3268 15.8526 20.6925 15.5583C21.0581 15.264 21.3086 14.8504 21.4 14.39L23 6H6">
+                                </path>
+                            </svg>
+                            Add to Cart
+                        </button>
+                    </div>
+
+                    <!-- Trust Signals -->
+                    <div class="trust-signals">
+                        <div class="trust-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 12l2 2 4-4"></path>
+                                <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
+                                <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
+                                <path d="M12 3c0 1-1 3-3 3s-3-2-3-3 1-3 3-3 3 2 3 3"></path>
+                                <path d="M12 21c0-1 1-3 3-3s3 2 3 3-1 3-3 3-3-2-3-3"></path>
+                            </svg>
+                            <span>2-year warranty</span>
+                        </div>
+                        <div class="trust-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span>Free shipping</span>
+                        </div>
+                        <div class="trust-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                            </svg>
+                            <span>30-day returns</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
