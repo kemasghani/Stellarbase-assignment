@@ -322,3 +322,201 @@ function showAlert(title, message, duration = 4000) {
         }
     }, duration);
 }
+
+// Add to cart functionality
+function addToCart() {
+    const quantityInput = document.getElementById('quantity');
+    const quantity = parseInt(quantityInput.value);
+
+    // Check if product is out of stock
+    if (currentVariant.stock === 0) {
+        const variantText = `${currentVariant.color} • ${currentVariant.size}`;
+        showAlert(
+            'Out of Stock',
+            `Sorry, ${productData.title} (${variantText}) is currently out of stock. Please select a different variant or check back later.`
+        );
+        return;
+    }
+
+    // Check if quantity is valid
+    if (quantity <= 0) {
+        showAlert(
+            'Invalid Quantity',
+            'Please select a valid quantity before adding to cart.'
+        );
+        return;
+    }
+
+    // Check if item already exists in cart
+    const existingItemIndex = cart.findIndex(item =>
+        item.variantId === currentVariant.id
+    );
+
+    let isNewItem = existingItemIndex === -1;
+    let addedQuantity = quantity;
+
+    // Check if adding this quantity would exceed stock
+    if (existingItemIndex !== -1) {
+        const currentCartQuantity = cart[existingItemIndex].quantity;
+        const totalQuantity = currentCartQuantity + quantity;
+
+        if (totalQuantity > currentVariant.stock) {
+            const availableQuantity = currentVariant.stock - currentCartQuantity;
+            if (availableQuantity <= 0) {
+                const variantText = `${currentVariant.color} • ${currentVariant.size}`;
+                showAlert(
+                    'Maximum Quantity Reached',
+                    `You already have the maximum available quantity of ${productData.title} (${variantText}) in your cart.`
+                );
+                return;
+            } else {
+                addedQuantity = availableQuantity;
+                cart[existingItemIndex].quantity = currentVariant.stock;
+                const variantText = `${currentVariant.color} • ${currentVariant.size}`;
+                showAlert(
+                    'Limited Stock',
+                    `Only ${addedQuantity} more ${addedQuantity === 1 ? 'item' : 'items'} available. Added maximum possible quantity to cart.`
+                );
+            }
+        } else {
+            cart[existingItemIndex].quantity = totalQuantity;
+        }
+    } else {
+        // Add new item to cart
+        if (quantity > currentVariant.stock) {
+            addedQuantity = currentVariant.stock;
+            const variantText = `${currentVariant.color} • ${currentVariant.size}`;
+            showAlert(
+                'Limited Stock',
+                `Only ${addedQuantity} ${addedQuantity === 1 ? 'item' : 'items'} available. Added maximum possible quantity to cart.`
+            );
+        }
+
+        cart.push({
+            variantId: currentVariant.id,
+            title: productData.title,
+            color: currentVariant.color,
+            size: currentVariant.size,
+            price: currentVariant.price,
+            quantity: addedQuantity,
+            image: currentVariant.thumbnail
+        });
+    }
+
+    updateCartDisplay();
+    updateCartCount();
+
+    // Show success notification when item is added to cart
+    const variantText = `${currentVariant.color} • ${currentVariant.size}`;
+    const quantityText = addedQuantity === 1 ? '1 item' : `${addedQuantity} items`;
+    showNotification(
+        'Added to Cart!',
+        `${quantityText} (${variantText}) added to your cart`
+    );
+
+    // Show cart sidebar
+    toggleCart();
+
+    // Reset quantity to 1
+    quantityInput.value = 1;
+}
+
+// Cart sidebar functions
+function toggleCart() {
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+
+    cartSidebar.classList.toggle('open');
+    cartOverlay.classList.toggle('open');
+
+    if (cartSidebar.classList.contains('open')) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+}
+
+function updateCartCount() {
+    const cartCount = document.getElementById('cartCount');
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCount.textContent = totalItems;
+}
+
+function updateCartDisplay() {
+    const cartItems = document.getElementById('cartItems');
+    const cartFooter = document.getElementById('cartFooter');
+
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<div class="empty-cart"><p>Your cart is empty</p></div>';
+        cartFooter.style.display = 'none';
+        return;
+    }
+
+    cartFooter.style.display = 'block';
+
+    cartItems.innerHTML = cart.map((item, index) => `
+    <div class="cart-item">
+      <img src="${item.image}" alt="${item.title}" class="cart-item-image">
+      <div class="cart-item-details">
+        <div class="cart-item-title">${item.title}</div>
+        <div class="cart-item-variant">${item.color} • ${item.size}</div>
+        <div class="cart-item-controls">
+          <div class="cart-item-quantity">
+            <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, -1)">-</button>
+            <input type="number" class="cart-quantity-input" value="${item.quantity}" min="1" onchange="setCartItemQuantity(${index}, this.value)">
+            <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, 1)">+</button>
+          </div>
+          <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+      </div>
+      <button class="remove-item" onclick="removeCartItem(${index})" aria-label="Remove item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  `).join('');
+
+    // Update totals
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('cartTotal').textContent = `$${subtotal.toFixed(2)}`;
+}
+
+function updateCartItemQuantity(index, change) {
+    const item = cart[index];
+    const variant = productData.variants[item.variantId];
+    const newQuantity = item.quantity + change;
+
+    if (newQuantity <= 0) {
+        removeCartItem(index);
+    } else if (newQuantity <= variant.stock) {
+        cart[index].quantity = newQuantity;
+        updateCartDisplay();
+        updateCartCount();
+    }
+}
+
+function setCartItemQuantity(index, value) {
+    const item = cart[index];
+    const variant = productData.variants[item.variantId];
+    let quantity = parseInt(value);
+
+    if (isNaN(quantity) || quantity <= 0) {
+        removeCartItem(index);
+    } else {
+        if (quantity > variant.stock) {
+            quantity = variant.stock;
+        }
+        cart[index].quantity = quantity;
+        updateCartDisplay();
+        updateCartCount();
+    }
+}
+
+function removeCartItem(index) {
+    cart.splice(index, 1);
+    updateCartDisplay();
+    updateCartCount();
+}
