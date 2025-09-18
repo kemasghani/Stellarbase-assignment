@@ -74,13 +74,11 @@ const productData = {
 let cart = [];
 let currentVariant = productData.variants["black-standard"];
 
-// Initialize the page
 document.addEventListener('DOMContentLoaded', function () {
     updateProductDisplay();
     updateCartCount();
 });
 
-// Update product display based on selected variant
 function updateVariant() {
     const colorSelect = document.getElementById('colorSelect');
     const sizeSelect = document.getElementById('sizeSelect');
@@ -89,8 +87,6 @@ function updateVariant() {
     if (productData.variants[variantKey]) {
         currentVariant = productData.variants[variantKey];
         updateProductDisplay();
-
-        // Update thumbnail active state
         const thumbnails = document.querySelectorAll('.thumbnail');
         thumbnails.forEach((thumb, index) => {
             thumb.classList.remove('active');
@@ -103,14 +99,12 @@ function updateVariant() {
     }
 }
 
-// Update the product display with current variant data
 function updateProductDisplay() {
     // Update main image
     const mainImage = document.getElementById('mainImage');
     mainImage.src = currentVariant.image;
     mainImage.alt = `${productData.title} - ${currentVariant.color} ${currentVariant.size}`;
 
-    // Update price
     const currentPrice = document.getElementById('currentPrice');
     const originalPrice = document.getElementById('originalPrice');
     const savings = document.getElementById('savings');
@@ -131,7 +125,6 @@ function updateProductDisplay() {
         saleBadge.style.display = 'none';
     }
 
-    // Update stock info and button state
     const stockInfo = document.getElementById('stockInfo');
     const addToCartBtn = document.getElementById('addToCartBtn');
     const stockBadge = document.getElementById('stockBadge');
@@ -160,28 +153,22 @@ function updateProductDisplay() {
         quantityInput.max = currentVariant.stock;
     }
 
-    // Validate current quantity
     validateQuantity();
 }
 
-// Change main image when thumbnail is clicked
 function changeMainImage(thumbnail, index) {
     const mainImage = document.getElementById('mainImage');
     const colorSelect = document.getElementById('colorSelect');
 
-    // Update active thumbnail
     document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
     thumbnail.classList.add('active');
 
-    // Update color select based on thumbnail index
     const colors = ['black', 'white', 'blue'];
     colorSelect.value = colors[index];
 
-    // Update variant
     updateVariant();
 }
 
-// Quantity control functions
 function increaseQuantity() {
     const quantityInput = document.getElementById('quantity');
     const currentQuantity = parseInt(quantityInput.value);
@@ -205,8 +192,7 @@ function validateQuantity() {
     const quantityInput = document.getElementById('quantity');
     let quantity = parseInt(quantityInput.value);
     const maxQuantity = parseInt(quantityInput.max);
-
-    // Handle invalid input
+ut
     if (isNaN(quantity) || quantity < 1) {
         quantity = 1;
     } else if (quantity > maxQuantity) {
@@ -214,8 +200,6 @@ function validateQuantity() {
     }
 
     quantityInput.value = quantity;
-
-    // Update quantity buttons state
     const decreaseBtn = document.querySelector('.quantity-btn[onclick="decreaseQuantity()"]');
     const increaseBtn = document.querySelector('.quantity-btn[onclick="increaseQuantity()"]');
 
@@ -223,15 +207,11 @@ function validateQuantity() {
     increaseBtn.disabled = quantity >= maxQuantity || maxQuantity === 0;
 }
 
-// Added notification system for cart additions
 function showNotification(title, message, duration = 3000) {
-    // Remove existing notification if any
     const existingNotification = document.querySelector('.notification');
     if (existingNotification) {
         existingNotification.remove();
     }
-
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.innerHTML = `
@@ -252,15 +232,11 @@ function showNotification(title, message, duration = 3000) {
     </button>
   `;
 
-    // Add to page
     document.body.appendChild(notification);
-
-    // Show notification with animation
     setTimeout(() => {
         notification.classList.add('show');
     }, 100);
 
-    // Auto-hide notification
     setTimeout(() => {
         if (notification.parentElement) {
             notification.classList.remove('show');
@@ -273,15 +249,12 @@ function showNotification(title, message, duration = 3000) {
     }, duration);
 }
 
-// Added out-of-stock alert system
 function showAlert(title, message, duration = 4000) {
-    // Remove existing alert if any
     const existingAlert = document.querySelector('.alert');
     if (existingAlert) {
         existingAlert.remove();
     }
 
-    // Create alert element
     const alert = document.createElement('div');
     alert.className = 'alert';
     alert.innerHTML = `
@@ -302,15 +275,12 @@ function showAlert(title, message, duration = 4000) {
     </button>
   `;
 
-    // Add to page
     document.body.appendChild(alert);
 
-    // Show alert with animation
     setTimeout(() => {
         alert.classList.add('show');
     }, 100);
 
-    // Auto-hide alert
     setTimeout(() => {
         if (alert.parentElement) {
             alert.classList.remove('show');
@@ -323,12 +293,10 @@ function showAlert(title, message, duration = 4000) {
     }, duration);
 }
 
-// Add to cart functionality
 function addToCart() {
     const quantityInput = document.getElementById('quantity');
     const quantity = parseInt(quantityInput.value);
 
-    // Check if product is out of stock
     if (currentVariant.stock === 0) {
         const variantText = `${currentVariant.color} • ${currentVariant.size}`;
         showAlert(
@@ -337,8 +305,6 @@ function addToCart() {
         );
         return;
     }
-
-    // Check if quantity is valid
     if (quantity <= 0) {
         showAlert(
             'Invalid Quantity',
@@ -346,16 +312,10 @@ function addToCart() {
         );
         return;
     }
-
-    // Check if item already exists in cart
     const existingItemIndex = cart.findIndex(item =>
         item.variantId === currentVariant.id
     );
-
-    let isNewItem = existingItemIndex === -1;
     let addedQuantity = quantity;
-
-    // Check if adding this quantity would exceed stock
     if (existingItemIndex !== -1) {
         const currentCartQuantity = cart[existingItemIndex].quantity;
         const totalQuantity = currentCartQuantity + quantity;
@@ -382,7 +342,6 @@ function addToCart() {
             cart[existingItemIndex].quantity = totalQuantity;
         }
     } else {
-        // Add new item to cart
         if (quantity > currentVariant.stock) {
             addedQuantity = currentVariant.stock;
             const variantText = `${currentVariant.color} • ${currentVariant.size}`;
@@ -406,22 +365,16 @@ function addToCart() {
     updateCartDisplay();
     updateCartCount();
 
-    // Show success notification when item is added to cart
     const variantText = `${currentVariant.color} • ${currentVariant.size}`;
     const quantityText = addedQuantity === 1 ? '1 item' : `${addedQuantity} items`;
     showNotification(
         'Added to Cart!',
         `${quantityText} (${variantText}) added to your cart`
     );
-
-    // Show cart sidebar
     toggleCart();
-
-    // Reset quantity to 1
     quantityInput.value = 1;
 }
 
-// Cart sidebar functions
 function toggleCart() {
     const cartSidebar = document.getElementById('cartSidebar');
     const cartOverlay = document.getElementById('cartOverlay');
@@ -520,3 +473,21 @@ function removeCartItem(index) {
     updateCartDisplay();
     updateCartCount();
 }
+
+document.addEventListener('click', function (event) {
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartBtn = document.querySelector('.cart-btn');
+
+    if (!cartSidebar.contains(event.target) && !cartBtn.contains(event.target) && cartSidebar.classList.contains('open')) {
+        toggleCart();
+    }
+});
+t
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+        const cartSidebar = document.getElementById('cartSidebar');
+        if (cartSidebar.classList.contains('open')) {
+            toggleCart();
+        }
+    }
+});

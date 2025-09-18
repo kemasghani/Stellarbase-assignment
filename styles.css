@@ -48,7 +48,6 @@ body {
     padding: 0 1rem;
 }
 
-/* Header Styles */
 .header {
     background-color: var(--background);
     border-bottom: 1px solid var(--border);
@@ -126,7 +125,6 @@ body {
     font-weight: 600;
 }
 
-/* Main Content */
 .main {
     padding: 2rem 0;
 }
@@ -200,7 +198,6 @@ body {
     border-color: var(--primary);
 }
 
-/* Product Details */
 .product-header {
     margin-bottom: 1.5rem;
 }
@@ -237,8 +234,6 @@ body {
     color: var(--muted-foreground);
     font-size: 0.875rem;
 }
-
-/* Price Section */
 .price-section {
     margin-bottom: 1.5rem;
 }
@@ -268,7 +263,6 @@ body {
     font-size: 0.875rem;
 }
 
-/* Product Description */
 .product-description {
     margin-bottom: 2rem;
 }
@@ -298,7 +292,6 @@ body {
     font-weight: 600;
 }
 
-/* Variant Section */
 .variant-section {
     margin-bottom: 2rem;
 }
@@ -331,7 +324,6 @@ body {
     box-shadow: 0 0 0 2px var(--ring);
 }
 
-/* Purchase Section */
 .purchase-section {
     margin-bottom: 2rem;
 }
@@ -427,7 +419,6 @@ body {
     cursor: not-allowed;
 }
 
-/* Trust Signals */
 .trust-signals {
     display: flex;
     gap: 1.5rem;
@@ -447,7 +438,6 @@ body {
     color: var(--accent);
 }
 
-/* Cart Sidebar */
 .cart-sidebar {
     position: fixed;
     top: 0;
@@ -668,8 +658,6 @@ body {
 .checkout-btn:hover {
     background-color: #0f3a47;
 }
-
-/* Responsive Design */
 @media (max-width: 768px) {
     .nav {
         display: none;
@@ -731,5 +719,154 @@ body {
 
     .trust-signals {
         padding: 1rem 0;
+    }
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateX(400px);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 350px;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.notification-message {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.notification-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        transform: translateY(-100px);
+    }
+
+    .notification.show {
+        transform: translateY(0);
+    }
+}
+
+.alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--destructive);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 400px;
+    z-index: 1001;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.alert.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.alert-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.alert-message {
+    font-size: 13px;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.alert-close:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .alert {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        transform: translateY(-100%);
+    }
+
+    .alert.show {
+        transform: translateY(0);
     }
 }
