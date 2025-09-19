@@ -99,7 +99,6 @@ function updateVariant() {
     }
 }
 
-// Helper function to get available stock for current variant
 function getAvailableStock(variantId) {
     const cartQuantity = cart.find(item => item.variantId === variantId)?.quantity || 0;
     const originalStock = productData.variants[variantId].stock;
@@ -107,7 +106,6 @@ function getAvailableStock(variantId) {
 }
 
 function updateProductDisplay() {
-    // Update main image
     const mainImage = document.getElementById('mainImage');
     mainImage.src = currentVariant.image;
     mainImage.alt = `${productData.title} - ${currentVariant.color} ${currentVariant.size}`;
@@ -137,7 +135,6 @@ function updateProductDisplay() {
     const stockBadge = document.getElementById('stockBadge');
     const quantityInput = document.getElementById('quantity');
 
-    // Get available stock (original stock minus items in cart)
     const availableStock = getAvailableStock(currentVariant.id);
 
     if (availableStock === 0) {
@@ -163,7 +160,6 @@ function updateProductDisplay() {
         stockBadge.style.display = 'none';
         quantityInput.max = availableStock;
 
-        // Ensure current quantity doesn't exceed available stock
         if (parseInt(quantityInput.value) > availableStock) {
             quantityInput.value = availableStock;
         }
@@ -308,7 +304,6 @@ function showAlert(title, message, duration = 4000) {
 function addToCart() {
     const quantityInput = document.getElementById('quantity');
     const quantity = parseInt(quantityInput.value);
-    console.log('Adding to cart:', currentVariant, 'Quantity:', quantity);
 
     const availableStock = getAvailableStock(currentVariant.id);
 
@@ -355,8 +350,6 @@ function addToCart() {
             image: currentVariant.thumbnail
         });
     }
-
-    // Update stock display immediately after adding to cart
     updateProductDisplay();
     updateCartDisplay();
     updateCartCount();
@@ -406,7 +399,7 @@ function updateCartDisplay() {
 
     cartItems.innerHTML = cart.map((item, index) => {
         const availableStock = getAvailableStock(item.variantId);
-        const maxQuantity = availableStock + item.quantity; // Current quantity + remaining stock
+        const maxQuantity = availableStock + item.quantity;
         return `
         <div class="cart-item">
           <img src="${item.image}" alt="${item.title}" class="cart-item-image">
@@ -432,7 +425,6 @@ function updateCartDisplay() {
       `;
     }).join('');
 
-    // Update totals
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
     document.getElementById('cartTotal').textContent = `$${subtotal.toFixed(2)}`;
@@ -441,7 +433,7 @@ function updateCartDisplay() {
 function updateCartItemQuantity(index, change) {
     const item = cart[index];
     const availableStock = getAvailableStock(item.variantId);
-    const maxQuantity = availableStock + item.quantity; // Current quantity + remaining stock
+    const maxQuantity = availableStock + item.quantity;
     const newQuantity = item.quantity + change;
 
     if (newQuantity <= 0) {
@@ -451,7 +443,6 @@ function updateCartItemQuantity(index, change) {
         updateCartDisplay();
         updateCartCount();
 
-        // Update product display if this variant is currently selected
         if (item.variantId === currentVariant.id) {
             updateProductDisplay();
         }
@@ -461,7 +452,7 @@ function updateCartItemQuantity(index, change) {
 function setCartItemQuantity(index, value) {
     const item = cart[index];
     const availableStock = getAvailableStock(item.variantId);
-    const maxQuantity = availableStock + item.quantity; // Current quantity + remaining stock
+    const maxQuantity = availableStock + item.quantity;
     let quantity = parseInt(value);
 
     if (isNaN(quantity) || quantity <= 0) {
@@ -474,7 +465,6 @@ function setCartItemQuantity(index, value) {
         updateCartDisplay();
         updateCartCount();
 
-        // Update product display if this variant is currently selected
         if (item.variantId === currentVariant.id) {
             updateProductDisplay();
         }
@@ -487,7 +477,6 @@ function removeCartItem(index) {
     updateCartDisplay();
     updateCartCount();
 
-    // Update product display if this variant is currently selected
     if (removedItem.variantId === currentVariant.id) {
         updateProductDisplay();
     }
