@@ -9,8 +9,8 @@ const productData = {
             price: 299.99,
             originalPrice: 399.99,
             stock: 10,
-            image: "/placeholder.svg?height=500&width=500",
-            thumbnail: "/placeholder.svg?height=100&width=100",
+            image: "./image/headphone-black-small.png",
+            thumbnail: "./image/headphone-black-small.png",
             onSale: true
         },
         "black-large": {
@@ -20,8 +20,8 @@ const productData = {
             price: 329.99,
             originalPrice: 429.99,
             stock: 5,
-            image: "/placeholder.svg?height=500&width=500",
-            thumbnail: "/placeholder.svg?height=100&width=100",
+            image: "./image/headphone-black.png",
+            thumbnail: "./image/headphone-black.png",
             onSale: true
         },
         "white-standard": {
@@ -31,8 +31,8 @@ const productData = {
             price: 299.99,
             originalPrice: null,
             stock: 8,
-            image: "/placeholder.svg?height=500&width=500",
-            thumbnail: "/placeholder.svg?height=100&width=100",
+            image: "./image/headphone-white-small.png",
+            thumbnail: "./image/headphone-white-small.png",
             onSale: false
         },
         "white-large": {
@@ -42,8 +42,8 @@ const productData = {
             price: 329.99,
             originalPrice: null,
             stock: 0,
-            image: "/placeholder.svg?height=500&width=500",
-            thumbnail: "/placeholder.svg?height=100&width=100",
+            image: "./image/headphone-white.png",
+            thumbnail: "./image/headphone-white.png",
             onSale: false
         },
         "blue-standard": {
@@ -53,8 +53,8 @@ const productData = {
             price: 319.99,
             originalPrice: null,
             stock: 12,
-            image: "/placeholder.svg?height=500&width=500",
-            thumbnail: "/placeholder.svg?height=100&width=100",
+            image: "./image/headphone-blue-small.png",
+            thumbnail: "./image/headphone-blue-small.png",
             onSale: false
         },
         "blue-large": {
@@ -64,8 +64,8 @@ const productData = {
             price: 349.99,
             originalPrice: null,
             stock: 7,
-            image: "/placeholder.svg?height=500&width=500",
-            thumbnail: "/placeholder.svg?height=100&width=100",
+            image: "./image/headphone-blue.png",
+            thumbnail: "./image/headphone-blue.png",
             onSale: false
         }
     }
@@ -99,6 +99,13 @@ function updateVariant() {
     }
 }
 
+// Helper function to get available stock for current variant
+function getAvailableStock(variantId) {
+    const cartQuantity = cart.find(item => item.variantId === variantId)?.quantity || 0;
+    const originalStock = productData.variants[variantId].stock;
+    return Math.max(0, originalStock - cartQuantity);
+}
+
 function updateProductDisplay() {
     // Update main image
     const mainImage = document.getElementById('mainImage');
@@ -130,15 +137,19 @@ function updateProductDisplay() {
     const stockBadge = document.getElementById('stockBadge');
     const quantityInput = document.getElementById('quantity');
 
-    if (currentVariant.stock === 0) {
+    // Get available stock (original stock minus items in cart)
+    const availableStock = getAvailableStock(currentVariant.id);
+
+    if (availableStock === 0) {
         stockInfo.textContent = 'Out of stock';
         stockInfo.style.color = 'var(--destructive)';
         addToCartBtn.disabled = true;
         addToCartBtn.textContent = 'Out of Stock';
         stockBadge.style.display = 'block';
         quantityInput.max = 0;
+        quantityInput.value = 1;
     } else {
-        stockInfo.textContent = `${currentVariant.stock} in stock`;
+        stockInfo.textContent = `${availableStock} in stock`;
         stockInfo.style.color = 'var(--muted-foreground)';
         addToCartBtn.disabled = false;
         addToCartBtn.innerHTML = `
@@ -150,7 +161,12 @@ function updateProductDisplay() {
         Add to Cart
     `;
         stockBadge.style.display = 'none';
-        quantityInput.max = currentVariant.stock;
+        quantityInput.max = availableStock;
+
+        // Ensure current quantity doesn't exceed available stock
+        if (parseInt(quantityInput.value) > availableStock) {
+            quantityInput.value = availableStock;
+        }
     }
 
     validateQuantity();
@@ -192,13 +208,9 @@ function validateQuantity() {
     const quantityInput = document.getElementById('quantity');
     let quantity = parseInt(quantityInput.value);
     const maxQuantity = parseInt(quantityInput.max);
-ut
     if (isNaN(quantity) || quantity < 1) {
         quantity = 1;
-    } else if (quantity > maxQuantity) {
-        quantity = maxQuantity;
     }
-
     quantityInput.value = quantity;
     const decreaseBtn = document.querySelector('.quantity-btn[onclick="decreaseQuantity()"]');
     const increaseBtn = document.querySelector('.quantity-btn[onclick="increaseQuantity()"]');
@@ -296,8 +308,11 @@ function showAlert(title, message, duration = 4000) {
 function addToCart() {
     const quantityInput = document.getElementById('quantity');
     const quantity = parseInt(quantityInput.value);
+    console.log('Adding to cart:', currentVariant, 'Quantity:', quantity);
 
-    if (currentVariant.stock === 0) {
+    const availableStock = getAvailableStock(currentVariant.id);
+
+    if (availableStock === 0) {
         const variantText = `${currentVariant.color} • ${currentVariant.size}`;
         showAlert(
             'Out of Stock',
@@ -305,72 +320,54 @@ function addToCart() {
         );
         return;
     }
-    if (quantity <= 0) {
+
+    if (isNaN(quantity) || quantity <= 0) {
         showAlert(
             'Invalid Quantity',
             'Please select a valid quantity before adding to cart.'
         );
         return;
     }
+
+    if (quantity > availableStock) {
+        const variantText = `${currentVariant.color} • ${currentVariant.size}`;
+        showAlert(
+            'Quantity Exceeds Stock',
+            `You tried to add ${quantity}, but only ${availableStock} available for ${productData.title} (${variantText}).`
+        );
+        return;
+    }
+
     const existingItemIndex = cart.findIndex(item =>
         item.variantId === currentVariant.id
     );
-    let addedQuantity = quantity;
+
     if (existingItemIndex !== -1) {
-        const currentCartQuantity = cart[existingItemIndex].quantity;
-        const totalQuantity = currentCartQuantity + quantity;
-
-        if (totalQuantity > currentVariant.stock) {
-            const availableQuantity = currentVariant.stock - currentCartQuantity;
-            if (availableQuantity <= 0) {
-                const variantText = `${currentVariant.color} • ${currentVariant.size}`;
-                showAlert(
-                    'Maximum Quantity Reached',
-                    `You already have the maximum available quantity of ${productData.title} (${variantText}) in your cart.`
-                );
-                return;
-            } else {
-                addedQuantity = availableQuantity;
-                cart[existingItemIndex].quantity = currentVariant.stock;
-                const variantText = `${currentVariant.color} • ${currentVariant.size}`;
-                showAlert(
-                    'Limited Stock',
-                    `Only ${addedQuantity} more ${addedQuantity === 1 ? 'item' : 'items'} available. Added maximum possible quantity to cart.`
-                );
-            }
-        } else {
-            cart[existingItemIndex].quantity = totalQuantity;
-        }
+        cart[existingItemIndex].quantity += quantity;
     } else {
-        if (quantity > currentVariant.stock) {
-            addedQuantity = currentVariant.stock;
-            const variantText = `${currentVariant.color} • ${currentVariant.size}`;
-            showAlert(
-                'Limited Stock',
-                `Only ${addedQuantity} ${addedQuantity === 1 ? 'item' : 'items'} available. Added maximum possible quantity to cart.`
-            );
-        }
-
         cart.push({
             variantId: currentVariant.id,
             title: productData.title,
             color: currentVariant.color,
             size: currentVariant.size,
             price: currentVariant.price,
-            quantity: addedQuantity,
+            quantity,
             image: currentVariant.thumbnail
         });
     }
 
+    // Update stock display immediately after adding to cart
+    updateProductDisplay();
     updateCartDisplay();
     updateCartCount();
 
     const variantText = `${currentVariant.color} • ${currentVariant.size}`;
-    const quantityText = addedQuantity === 1 ? '1 item' : `${addedQuantity} items`;
+    const quantityText = quantity === 1 ? '1 item' : `${quantity} items`;
     showNotification(
         'Added to Cart!',
         `${quantityText} (${variantText}) added to your cart`
     );
+
     toggleCart();
     quantityInput.value = 1;
 }
@@ -407,29 +404,33 @@ function updateCartDisplay() {
 
     cartFooter.style.display = 'block';
 
-    cartItems.innerHTML = cart.map((item, index) => `
-    <div class="cart-item">
-      <img src="${item.image}" alt="${item.title}" class="cart-item-image">
-      <div class="cart-item-details">
-        <div class="cart-item-title">${item.title}</div>
-        <div class="cart-item-variant">${item.color} • ${item.size}</div>
-        <div class="cart-item-controls">
-          <div class="cart-item-quantity">
-            <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, -1)">-</button>
-            <input type="number" class="cart-quantity-input" value="${item.quantity}" min="1" onchange="setCartItemQuantity(${index}, this.value)">
-            <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, 1)">+</button>
+    cartItems.innerHTML = cart.map((item, index) => {
+        const availableStock = getAvailableStock(item.variantId);
+        const maxQuantity = availableStock + item.quantity; // Current quantity + remaining stock
+        return `
+        <div class="cart-item">
+          <img src="${item.image}" alt="${item.title}" class="cart-item-image">
+          <div class="cart-item-details">
+            <div class="cart-item-title">${item.title}</div>
+            <div class="cart-item-variant">${item.color} • ${item.size}</div>
+            <div class="cart-item-controls">
+              <div class="cart-item-quantity">
+                <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, -1)">-</button>
+                <input type="number" class="cart-quantity-input" value="${item.quantity}" min="1" max="${maxQuantity}" onchange="setCartItemQuantity(${index}, this.value)">
+                <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, 1)" ${item.quantity >= maxQuantity ? 'disabled' : ''}>+</button>
+              </div>
+              <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+            </div>
           </div>
-          <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+          <button class="remove-item" onclick="removeCartItem(${index})" aria-label="Remove item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
-      </div>
-      <button class="remove-item" onclick="removeCartItem(${index})" aria-label="Remove item">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-  `).join('');
+      `;
+    }).join('');
 
     // Update totals
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -439,39 +440,57 @@ function updateCartDisplay() {
 
 function updateCartItemQuantity(index, change) {
     const item = cart[index];
-    const variant = productData.variants[item.variantId];
+    const availableStock = getAvailableStock(item.variantId);
+    const maxQuantity = availableStock + item.quantity; // Current quantity + remaining stock
     const newQuantity = item.quantity + change;
 
     if (newQuantity <= 0) {
         removeCartItem(index);
-    } else if (newQuantity <= variant.stock) {
+    } else if (newQuantity <= maxQuantity) {
         cart[index].quantity = newQuantity;
         updateCartDisplay();
         updateCartCount();
+
+        // Update product display if this variant is currently selected
+        if (item.variantId === currentVariant.id) {
+            updateProductDisplay();
+        }
     }
 }
 
 function setCartItemQuantity(index, value) {
     const item = cart[index];
-    const variant = productData.variants[item.variantId];
+    const availableStock = getAvailableStock(item.variantId);
+    const maxQuantity = availableStock + item.quantity; // Current quantity + remaining stock
     let quantity = parseInt(value);
 
     if (isNaN(quantity) || quantity <= 0) {
         removeCartItem(index);
     } else {
-        if (quantity > variant.stock) {
-            quantity = variant.stock;
+        if (quantity > maxQuantity) {
+            quantity = maxQuantity;
         }
         cart[index].quantity = quantity;
         updateCartDisplay();
         updateCartCount();
+
+        // Update product display if this variant is currently selected
+        if (item.variantId === currentVariant.id) {
+            updateProductDisplay();
+        }
     }
 }
 
 function removeCartItem(index) {
+    const removedItem = cart[index];
     cart.splice(index, 1);
     updateCartDisplay();
     updateCartCount();
+
+    // Update product display if this variant is currently selected
+    if (removedItem.variantId === currentVariant.id) {
+        updateProductDisplay();
+    }
 }
 
 document.addEventListener('click', function (event) {
@@ -482,7 +501,7 @@ document.addEventListener('click', function (event) {
         toggleCart();
     }
 });
-t
+
 document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
         const cartSidebar = document.getElementById('cartSidebar');

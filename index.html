@@ -22,12 +22,12 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1>AudioTech</h1>
+                    <h1>technology</h1>
                 </div>
                 <nav class="nav">
                     <a href="#" class="nav-link">Products</a>
-                    <a href="#" class="nav-link">About</a>
-                    <a href="#" class="nav-link">Support</a>
+                    <a href="#" class="nav-link">Sale</a>
+                    <a href="#" class="nav-link">All</a>
                 </nav>
                 <div class="header-actions">
                     <button class="search-btn" aria-label="Search">
@@ -70,11 +70,11 @@
                         <div class="stock-badge" id="stockBadge" style="display: none;">OUT OF STOCK</div>
                     </div>
                     <div class="thumbnail-images">
-                        <img class="thumbnail active" src="/placeholder.svg?height=100&width=100" alt="Black headphones"
+                        <img class="thumbnail active" src="./image/headphone-black.png" alt="Black headphones"
                             onclick="changeMainImage(this, 0)">
-                        <img class="thumbnail" src="/placeholder.svg?height=100&width=100" alt="White headphones"
+                        <img class="thumbnail" src="./image/headphone-white.png" alt="White headphones"
                             onclick="changeMainImage(this, 1)">
-                        <img class="thumbnail" src="/placeholder.svg?height=100&width=100" alt="Blue headphones"
+                        <img class="thumbnail" src="./image/headphone-blue.png" alt="Blue headphones"
                             onclick="changeMainImage(this, 2)">
                     </div>
                 </div>
@@ -142,12 +142,12 @@
                             <div class="quantity-controls">
                                 <button class="quantity-btn" onclick="decreaseQuantity()"
                                     aria-label="Decrease quantity">-</button>
-                                <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="10"
+                                <input type="number" id="quantity" class="quantity-input" value="1"
                                     onchange="validateQuantity()">
                                 <button class="quantity-btn" onclick="increaseQuantity()"
                                     aria-label="Increase quantity">+</button>
                             </div>
-                            <span class="stock-info" id="stockInfo">10 in stock</span>
+                            <span class="stock-info" id="stockInfo"></span>
                         </div>
 
                         <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart()">
